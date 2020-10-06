@@ -1,0 +1,8 @@
+1.설치 
+	1) 리눅스
+		curl -fsSl http://get.docker.com/ | sudo su
+		docker version
+	2) 윈도우
+		https://docs.docker.com/docker-for-windows/install/
+			- Docker for Windows : windows10, 64bit , vmware와 병행 사용 불가
+			- Docker Tool Box : windows7, windows10 home, vmware와 병행 사용 
