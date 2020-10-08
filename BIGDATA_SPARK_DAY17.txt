@@ -1,0 +1,159 @@
+1. 설치 
+	1) 리눅스
+		curl -fsSl http://get.docker.com/ | sudo su
+		docker version
+	2) 윈도우
+		https://docs.docker.com/docker-for-windows/install/
+			- Docker for Windows : windows10, 64bit , vmware와 병행 사용 불가
+			- Docker Tool Box : windows7, windows10 home, vmware와 병행 사용 
+
+2. 특징 
+	- Pycon 2013 solomon kykes - "The Future of Linux Container"
+	- Go 언어로 개발 
+	- Immutable, Stateless, Scalable
+	- Community Edition & Enterprise Edition
+	- Linux Base
+	- 64bit OS only
+
+3. 사용법
+	docker version
+	docker --version
+
+	1) 이미지 검색 
+		docker search mysql
+		docker search hello-world
+	2) 이미지 다운로드
+		docker pull hello-world
+	3) 이미지 확인
+		docker images 
+	4) 실행중인 컨테이너 확인
+		docker container ps 
+	5) 컨테이너 실행 
+		docker run -i -t --name "hello" hello-world
+		docker run -it --name "hello" hello-world
+	
+		docker container ps
+		docker container ps -a
+	6) 컨테이너 삭제 
+		docker container rm hello
+		docker container rm prune > 전체 삭제
+	7) 이미지 삭제 
+		docker rmi 이미지 이름
+		
+	----------------------------------------------------------------
+
+4. 실습 
+	1) 우분투 사용하기 
+		docker search ubuntu
+		docker run -it --name "ub" unbuntu /bin/bash
+		
+		exit (ctrl + D)
+		docker contianer ps
+		docker contianer ps -a
+
+		docker start ub
+		docker container ps
+
+		docker attack ub
+
+		ctrl +p, ctrl+q > container를 중지 시키지 않고 나오기 
+
+		docker exec ub /bin/echo "hello~~~ world" > container가 실행 중이여야함 
+
+	2) CentOS 사용하기 
+		docker search centos
+	
+		docker container run -it --name co centos bash
+
+		ctrl+p,ctrl+q
+
+		docker container ps
+
+	3) Nginx 사용하기
+		docker search nginx
+		
+		docker pull nginx
+	
+		docker container run -it --name webserver -d -p 80:80 nginx
+
+		http://192.168.99.100/ >윈도우에서 접속
+
+		docker container run -it --name webserver2 -d -p 6789:80 nginx
+
+		docker container run -d -p 100000:80 nginx
+		docker container run -d -p 100001:80 nginx
+
+	4) Ubuntu 사용하기 
+		docker run --rm -it ubuntu.16.02 /bin/bash	
+	5) tensorflow 사용하기 
+		docker search tensorflow
+
+		docker container run --name tf -d -p 8888:8888 -p 6006:6006 teamlab/pydata-tensorflow:0.1
+
+	6) MySQL 사용하기
+		docker container run -d -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=true --name mysql5 mysql5.7
+		docker container run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=1111 --name mysql5 mysql5.7   > password설정 
+
+		docker exec -it mysql5 bash
+		bash 접속 후 > mysql -uroot -p1111
+		show database, showtables
+
+		mysql -h192.168.99.100 -uroot -p1111
+
+
+5. 명령어
+	1) docker run 
+		-d	: 백그라운드
+		-p	: 호스트와 컨테이너의 포트 연결(포워딩)
+		-v	: 디렉토리 연결
+		-e	: 환경변수 설
+		--naem	: 컨테이너 이름 설
+		--rm	: 프로세스 종료 시 컨테이너를 자동 제거
+		-it	: -i 와 -t를 동시에 사용 (터미널 입출력)
+		--link	: 컨테이너 연결
+	2) docker stop
+		docker ps -q 
+		docker container stop `docker ps -q`
+	3) docker start
+		docker container start `dockerps -aq`
+
+		for i in `docker ps -aq`: do echo $i; done
+		for i in `docker ps -aq`: do echo $i; docker start $i; done	
+
+		docker ps 
+
+6. 파일 공유 : cp
+	docker container cp webserver,/etc/nginx/nginx.conf .
+	docker container cp test.txt webserver,/etc/eginx/test.text
+
+	docker exec -it webserver /bin/bash
+
+7. 이미지 작성
+	1) Dockerfile 작성
+	2) Dockerfile 컴파일 
+		docker build --tag myimg:0.1 .
+
+		docker images
+	3) 이미지 실행
+		docker run --name my -d -p 10005:80 -v /c/example/data:/data myimg:0.1
+
+		docker ps
+	
+		http://192.168.99.100:10005
+
+	4) 내용이 수정되어 업데이트를 해야하는 경우 
+		docker commit -a "<이메일@주소.com>" -m "add test.txt" my myimg:0.2
+
+		docker images
+8, 이미지 저장, 불러오기 
+	1) 개인적인 저장소 
+	2) Amazon, MS Asure
+	3) docker hub
+	4) save, load or export, import
+		docker save -o myimage2.tar myimage:0.2
+
+		docker rmi myimg:0.2
+		docker images
+
+		docker load -i myimage2.tar
+		docker images
